@@ -178,7 +178,7 @@ test_final = np.clip(test_preds, 0, 10)
 final_preds_int = np.round(test_final).astype(int)
 
 rmse = np.sqrt(mean_squared_error(y_train_raw, oof_final))
-print(f"\n✅ CV RMSE (Real Data): {rmse:.4f}")
+print(f"\n CV RMSE (Real Data): {rmse:.4f}")
 
 low_mask = y_train_raw <= 5.0
 rmse_low = np.sqrt(mean_squared_error(y_train_raw[low_mask], oof_final[low_mask]))
@@ -189,4 +189,5 @@ print(pd.Series(final_preds_int).value_counts().sort_index())
 
 now = datetime.datetime.now().strftime("%Y%m%d_%H%M")
 sub = pd.DataFrame({"ID": test["id"] if "id" in test.columns else np.arange(1, len(test)+1), "score": final_preds_int})
+
 sub.to_csv(f"submission_LGBM_DiffPCA_Perfection_{now}.csv", index=False)
