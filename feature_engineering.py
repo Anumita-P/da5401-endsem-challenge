@@ -11,8 +11,6 @@ import xgboost as xgb
 import datetime
 from tqdm import tqdm
 
-
-# Assuming these files and variables are correctly loaded and available
 METRIC_NAMES = "metric_names.json"
 METRIC_EMB = "metric_name_embeddings.npy"
 TRAIN_JSON = "train_data.json"
@@ -107,5 +105,6 @@ features_test.append(instruction_norm_test - communication_norm_test)
 # Final Feature Stacking
 X_train_base = np.hstack(features_train)
 X_test_base = np.hstack(features_test)
+
 
 print(f"Total features created: {X_train_base.shape[1]}")
