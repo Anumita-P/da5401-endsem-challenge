@@ -54,7 +54,6 @@ train["communication_text"] = train["communication_text"].fillna("")
 test["communication_text"] = test["communication_text"].fillna("")
 
 # Load the Sentence Transformer model
-# A good general-purpose or multilingual model is necessary here
 model = SentenceTransformer("google/embeddinggemma-300m") 
 
 # 1. Instruction Embeddings (B) - System Prompt
@@ -65,9 +64,7 @@ instruction_emb_test = model.encode(test["instruction_text"].tolist(), show_prog
 communication_emb_train = model.encode(train["communication_text"].tolist(), show_progress_bar=True, batch_size=32, convert_to_numpy=True)
 communication_emb_test = model.encode(test["communication_text"].tolist(), show_progress_bar=True, batch_size=32, convert_to_numpy=True)
 
-
-
-# Normalize all vectors for robust similarity calculation
+# Normalize all vectors 
 metric_norm_train = normalize(train_metric_emb)
 instruction_norm_train = normalize(instruction_emb_train)
 communication_norm_train = normalize(communication_emb_train)
@@ -79,11 +76,11 @@ communication_norm_test = normalize(communication_emb_test)
 features_train = []
 features_test = []
 
-# --- 3.1 Raw Embeddings (A, B, C) ---
+# raw embeddings
 features_train.extend([train_metric_emb, instruction_emb_train, communication_emb_train])
 features_test.extend([test_metric_emb, instruction_emb_test, communication_emb_test])
 
-# --- 3.2 Metric (A) vs Communication (C): Goal vs Result ---
+
 # Cosine Similarity
 features_train.append((metric_norm_train * communication_norm_train).sum(axis=1, keepdims=True))
 features_test.append((metric_norm_test * communication_norm_test).sum(axis=1, keepdims=True))
@@ -94,7 +91,6 @@ features_test.append(metric_norm_test - communication_norm_test)
 features_train.append(metric_norm_train * communication_norm_train)
 features_test.append(metric_norm_test * communication_norm_test)
 
-# --- 3.3 Instruction (B) vs Communication (C): Rules vs Result ---
 # Cosine Similarity
 features_train.append((instruction_norm_train * communication_norm_train).sum(axis=1, keepdims=True))
 features_test.append((instruction_norm_test * communication_norm_test).sum(axis=1, keepdims=True))
@@ -108,3 +104,4 @@ X_test_base = np.hstack(features_test)
 
 
 print(f"Total features created: {X_train_base.shape[1]}")
+
